@@ -29,6 +29,24 @@ describe('calculator app', function () {
   })
   after(async () => await driver.quit())
 
+  const { Eyes } = require('eyes.selenium')
+  let eyes
+  before(async () => {
+    eyes = new Eyes()
+
+    // this will not be needed in the future (it's not in the tutorial)
+    eyes.setApiKey(process.env.APPLITOOLS_API_KEY)
+
+    await eyes.open(driver, 'Calculator App', 'Calculator App: E2E', {
+      width: 400,
+      height: 250
+    })
+  })
+
+  after(async () => {
+    await eyes.close()
+  })
+
   it('should work', async function () {
     await driver.get('http://localhost:8080')
 
@@ -37,6 +55,8 @@ describe('calculator app', function () {
     await driver.wait(until.elementLocated(By.css('.display')), 5000)
 
     const displayElement = await driver.findElement(By.css('.display'))
+
+    await eyes.checkWindow('before calculation')
 
     expect(await displayElement.getText()).to.equal('0')
 
